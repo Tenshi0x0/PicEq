@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PicEq</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script>
+      window.MathJax = {
+        loader: { load: ["input/tex", "output/svg"] },
+        tex: {
+          inlineMath: [["\\(", "\\)"]],
+          displayMath: [["$$", "$$"]]
+        },
+        svg: {
+          fontCache: "none"
+        },
+        startup: {
+          typeset: false
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js"></script>
+    <script defer src="/app.js"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <h1>PicEq</h1>
+        <p>LaTeX 公式编辑、SVG 导出和 JSON 项目保存。</p>
+      </div>
+      <div class="status" id="status">正在加载 MathJax...</div>
+    </header>
+
+    <main class="workspace">
+      <section class="editor-panel" aria-label="LaTeX editor">
+        <div class="panel-heading">
+          <h2>公式</h2>
+          <label class="check-row">
+            <input id="autoUpdate" type="checkbox" checked />
+            <span>自动更新</span>
+          </label>
+        </div>
+
+        <label class="field">
+          <span>LaTeX</span>
+          <textarea id="latexInput" spellcheck="false">x = \sin \left( \frac{\pi}{2} \right)</textarea>
+        </label>
+
+        <div class="controls-grid">
+          <fieldset>
+            <legend>颜色</legend>
+            <label><input type="radio" name="colorMode" value="default" checked /> MathJax 默认</label>
+            <label><input type="radio" name="colorMode" value="black" /> 黑色</label>
+            <label class="inline-control">
+              <input type="radio" name="colorMode" value="custom" />
+              <span>CSS 颜色</span>
+              <input id="customColor" type="text" value="#1d4ed8" />
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>缩放</legend>
+            <label><input type="radio" name="scaleMode" value="default" checked /> 默认 1ex = 8px</label>
+            <label class="inline-control">
+              <input type="radio" name="scaleMode" value="manual" />
+              <span>手动</span>
+              <input id="manualExPx" type="number" min="1" max="200" step="0.1" value="8" />
+              <span>px</span>
+            </label>
+            <label class="inline-control">
+              <input type="radio" name="scaleMode" value="font" />
+              <span>匹配字体</span>
+              <input id="fontFamily" type="text" value="Arial" />
+              <input id="fontSizePx" type="number" min="1" max="200" step="1" value="16" />
+              <span>px</span>
+            </label>
+          </fieldset>
+        </div>
+
+        <fieldset class="display-field">
+          <legend>渲染方式</legend>
+          <label><input type="radio" name="displayMode" value="true" checked /> Display mode</label>
+          <label><input type="radio" name="displayMode" value="false" /> Inline mode</label>
+        </fieldset>
+
+        <div class="button-row">
+          <button id="renderButton" type="button">渲染</button>
+          <button id="downloadSvgButton" type="button">下载 SVG</button>
+        </div>
+      </section>
+
+      <section class="preview-panel" aria-label="SVG preview">
+        <div class="panel-heading">
+          <h2>SVG 预览</h2>
+          <span id="svgSize">-</span>
+        </div>
+        <div id="preview" class="preview" aria-live="polite"></div>
+        <label class="field source-field">
+          <span>SVG 源码</span>
+          <textarea id="svgSource" readonly spellcheck="false"></textarea>
+        </label>
+      </section>
+
+      <section class="project-panel" aria-label="Project JSON">
+        <div class="panel-heading">
+          <h2>项目 JSON</h2>
+          <button id="downloadJsonButton" type="button">下载 JSON</button>
+        </div>
+
+        <div class="project-grid">
+          <label class="field">
+            <span>本地目录</span>
+            <input id="projectDirectory" type="text" placeholder="例如 D:\Works\PicEq\projects" />
+          </label>
+          <label class="field">
+            <span>文件名</span>
+            <input id="projectFilename" type="text" value="equation.json" />
+          </label>
+        </div>
+
+        <div class="button-row">
+          <button id="saveProjectButton" type="button">保存到目录</button>
+          <button id="loadProjectButton" type="button">按路径导入</button>
+          <button id="listProjectButton" type="button">列出目录</button>
+        </div>
+
+        <div id="projectList" class="project-list"></div>
+
+        <label class="file-import">
+          <span>从浏览器选择 JSON 导入</span>
+          <input id="jsonFileInput" type="file" accept="application/json,.json" />
+        </label>
+      </section>
+    </main>
+
+    <div id="measureHost" class="measure-host" aria-hidden="true"></div>
+  </body>
+</html>

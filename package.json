@@ -1,0 +1,20 @@
+{
+  "name": "piceq",
+  "version": "0.1.0",
+  "description": "A local LaTeX equation editor that exports SVG and saves editable JSON projects.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "latex",
+    "svg",
+    "mathjax",
+    "equation"
+  ],
+  "author": "Tenshi",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

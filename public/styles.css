@@ -1,0 +1,293 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --text: #1f2937;
+  --muted: #667085;
+  --line: #d7dce3;
+  --accent: #1d4ed8;
+  --accent-hover: #1e40af;
+  --danger: #b42318;
+  --ok: #027a48;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--accent);
+  color: #ffffff;
+  cursor: pointer;
+  min-height: 36px;
+  padding: 0 14px;
+}
+
+button:hover {
+  background: var(--accent-hover);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.app-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px clamp(16px, 3vw, 40px);
+  border-bottom: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.app-header h1,
+.panel-heading h2 {
+  margin: 0;
+}
+
+.app-header h1 {
+  font-size: 28px;
+}
+
+.app-header p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.status {
+  max-width: 520px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.status.error {
+  color: var(--danger);
+}
+
+.status.ok {
+  color: var(--ok);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(360px, 1fr);
+  grid-template-areas:
+    "editor preview"
+    "project preview";
+  gap: 18px;
+  padding: 18px clamp(16px, 3vw, 40px) 32px;
+}
+
+.editor-panel,
+.preview-panel,
+.project-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 18px;
+}
+
+.editor-panel {
+  grid-area: editor;
+}
+
+.preview-panel {
+  grid-area: preview;
+  min-width: 0;
+}
+
+.project-panel {
+  grid-area: project;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.panel-heading h2 {
+  font-size: 17px;
+}
+
+.field,
+.file-import {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.field input,
+.field textarea,
+.inline-control input[type="text"],
+.inline-control input[type="number"] {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: #ffffff;
+  padding: 9px 10px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+#latexInput {
+  min-height: 150px;
+  font-family: Consolas, "Courier New", monospace;
+  line-height: 1.45;
+}
+
+.source-field {
+  margin-top: 14px;
+}
+
+#svgSource {
+  min-height: 260px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+fieldset {
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+legend {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 0 5px;
+}
+
+fieldset label,
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.controls-grid,
+.project-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.inline-control {
+  flex-wrap: wrap;
+}
+
+.inline-control input[type="text"] {
+  max-width: 140px;
+}
+
+.inline-control input[type="number"] {
+  max-width: 86px;
+}
+
+.display-field {
+  margin-top: 14px;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.preview {
+  display: grid;
+  place-items: center;
+  min-height: 260px;
+  overflow: auto;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: #fbfcfe;
+  padding: 24px;
+}
+
+.preview svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.project-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.project-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.project-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-import {
+  margin-top: 14px;
+}
+
+.measure-host {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .app-header {
+    display: grid;
+  }
+
+  .status {
+    text-align: left;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "editor"
+      "preview"
+      "project";
+  }
+}
