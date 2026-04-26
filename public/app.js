@@ -23,6 +23,7 @@
     fontFamily: document.getElementById("fontFamily"),
     fontSizePx: document.getElementById("fontSizePx"),
     renderButton: document.getElementById("renderButton"),
+    copySvgButton: document.getElementById("copySvgButton"),
     downloadSvgButton: document.getElementById("downloadSvgButton"),
     downloadJsonButton: document.getElementById("downloadJsonButton"),
     svgSource: document.getElementById("svgSource"),
@@ -184,7 +185,7 @@
       els.svgSize.textContent = "-";
       latestSvg = "";
       setStatus("请输入 LaTeX。");
-      return;
+      return "";
     }
 
     try {
@@ -202,12 +203,14 @@
       els.preview.replaceChildren(svg.cloneNode(true));
       els.svgSize.textContent = `${svg.getAttribute("width") || "auto"} × ${svg.getAttribute("height") || "auto"}`;
       setStatus("已渲染。", "ok");
+      return latestSvg;
     } catch (error) {
       latestSvg = "";
       els.preview.textContent = "渲染失败";
       els.svgSource.value = "";
       els.svgSize.textContent = "-";
       setStatus(error.message || "渲染失败。", "error");
+      return "";
     }
   }
 
@@ -242,6 +245,31 @@
       throw new Error(data.error || "请求失败。");
     }
     return data;
+  }
+
+  function svgCacheFilename() {
+    const projectName = (els.projectFilename.value.trim() || "equation").replace(/\.json$/i, "");
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    return `${projectName}-${timestamp}.svg`;
+  }
+
+  async function copySvg() {
+    const svg = await renderEquation();
+    if (!svg) {
+      throw new Error("没有可复制的 SVG。");
+    }
+
+    const data = await apiPost("/api/svg/cache", {
+      filename: svgCacheFilename(),
+      svg,
+      copyToClipboard: true
+    });
+
+    if (!data.clipboardCopied) {
+      throw new Error(`SVG 已缓存：${data.filePath}，但复制文件失败：${data.clipboardError || "未知错误"}`);
+    }
+
+    setStatus(`已复制 SVG 文件，可粘贴到 PPT：${data.filePath}`, "ok");
   }
 
   function projectInput() {
@@ -315,6 +343,7 @@
     });
 
     els.renderButton.addEventListener("click", renderEquation);
+    els.copySvgButton.addEventListener("click", () => copySvg().catch((error) => setStatus(error.message, "error")));
     els.downloadSvgButton.addEventListener("click", () => {
       if (!latestSvg) {
         renderEquation();

@@ -47,6 +47,15 @@ $env:PORT=5173; npm start
 
 SVG 的宽高会按当前缩放设置写成 `px`，同时在根节点保留 `data-piceq-scale`，例如 `1ex=8px`。
 
+## 复制 SVG 到剪贴板
+
+点击 `复制 SVG` 后，PicEq 会先重新渲染当前公式，然后执行两件事：
+
+1. 在项目根目录的 `cache/` 目录下保存一份 `.svg` 文件；如果 `cache/` 不存在，服务端会自动创建。
+2. 把这个 `.svg` 文件本身放入系统剪贴板，行为等同于在资源管理器里复制该 SVG 文件，方便直接粘贴到 PowerPoint。
+
+这个复制动作由本地 Node.js 服务调用 Windows PowerShell 的 `Set-Clipboard -LiteralPath` 完成，因此需要在 Windows 上运行服务。
+
 ## 保存和导入 JSON
 
 PicEq 的 JSON 项目用于后续继续编辑，它不是 SVG，而是保存编辑状态：
@@ -101,6 +110,7 @@ equation.json
 - `server.js` 使用 Node.js 原生 HTTP 服务提供网页和 JSON 文件 API。
 - `public/index.html`、`public/styles.css`、`public/app.js` 是前端界面。
 - 前端通过 MathJax 4 的 TeX to SVG 输出把 LaTeX 转成 SVG。
+- 点击 `复制 SVG` 时，前端调用 `/api/svg/cache` 把 SVG 写入项目根目录的 `cache/`，服务端再把该 SVG 文件路径作为文件放入系统剪贴板。
 - 保存到本地目录时，浏览器把 JSON 项目发给 `/api/projects/save`，Node.js 服务在本机文件系统写入文件。
 - 导入项目时，前端调用 `/api/projects/load` 或读取浏览器选择的 JSON 文件，然后恢复 LaTeX、颜色、缩放和渲染方式。
 

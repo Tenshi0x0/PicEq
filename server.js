@@ -1,10 +1,14 @@
 const fs = require("fs/promises");
 const http = require("http");
 const path = require("path");
+const { execFile } = require("child_process");
+const { promisify } = require("util");
 const { URL } = require("url");
 
+const execFileAsync = promisify(execFile);
 const PORT = Number(process.env.PORT || 3000);
 const PUBLIC_DIR = path.join(__dirname, "public");
+const CACHE_DIR = path.join(__dirname, "cache");
 const MAX_BODY_BYTES = 5 * 1024 * 1024;
 
 const mimeTypes = {
@@ -59,6 +63,34 @@ function projectPathFromInput(input) {
     throw new Error("Directory is required.");
   }
   return path.join(path.resolve(directory), safeProjectFilename(input.filename));
+}
+
+function safeCacheFilename(filename) {
+  const value = String(filename || "").trim();
+  const fallback = `equation-${new Date().toISOString().replace(/[:.]/g, "-")}.svg`;
+  const clean = (value || fallback).replace(/[\\/:*?"<>|]/g, "-");
+  return clean.toLowerCase().endsWith(".svg") ? clean : `${clean}.svg`;
+}
+
+function powerShellLiteral(value) {
+  return `'${String(value).replace(/'/g, "''")}'`;
+}
+
+async function copyFileToClipboard(filePath) {
+  if (process.platform !== "win32") {
+    throw new Error("Copying files to the clipboard is only supported on Windows.");
+  }
+
+  const command = `Set-Clipboard -LiteralPath ${powerShellLiteral(filePath)}`;
+  const encodedCommand = Buffer.from(command, "utf16le").toString("base64");
+  await execFileAsync(
+    "powershell.exe",
+    ["-NoProfile", "-NonInteractive", "-EncodedCommand", encodedCommand],
+    {
+      timeout: 10000,
+      windowsHide: true
+    }
+  );
 }
 
 async function readBody(req) {
@@ -154,6 +186,41 @@ async function handleApi(req, res, pathname) {
         }))
         .sort((a, b) => a.name.localeCompare(b.name));
       sendJson(res, 200, { ok: true, directory: absoluteDirectory, files });
+      return;
+    }
+
+    if (pathname === "/api/svg/cache") {
+      const svg = String(input.svg || "").trim();
+      if (!svg) {
+        throw new Error("SVG payload is required.");
+      }
+      if (!/^<svg[\s>]/i.test(svg)) {
+        throw new Error("Only SVG content is supported.");
+      }
+
+      const filename = safeCacheFilename(input.filename);
+      const filePath = path.join(CACHE_DIR, filename);
+      let clipboardCopied = false;
+      let clipboardError = "";
+
+      await fs.mkdir(CACHE_DIR, { recursive: true });
+      await fs.writeFile(filePath, `${svg}\n`, "utf8");
+
+      if (input.copyToClipboard) {
+        try {
+          await copyFileToClipboard(filePath);
+          clipboardCopied = true;
+        } catch (error) {
+          clipboardError = error.message || "Failed to copy SVG file to clipboard.";
+        }
+      }
+
+      sendJson(res, 200, {
+        ok: true,
+        filePath,
+        clipboardCopied,
+        clipboardError
+      });
       return;
     }
 
