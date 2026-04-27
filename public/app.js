@@ -28,6 +28,7 @@
     downloadJsonButton: document.getElementById("downloadJsonButton"),
     svgSource: document.getElementById("svgSource"),
     preview: document.getElementById("preview"),
+    previewContent: document.getElementById("previewContent"),
     svgSize: document.getElementById("svgSize"),
     projectDirectory: document.getElementById("projectDirectory"),
     projectFilename: document.getElementById("projectFilename"),
@@ -180,7 +181,7 @@
     const options = getOptions();
 
     if (!latex) {
-      els.preview.textContent = "";
+      els.previewContent.textContent = "";
       els.svgSource.value = "";
       els.svgSize.textContent = "-";
       latestSvg = "";
@@ -200,13 +201,13 @@
       const svg = prepareSvg(sourceSvg, options);
       latestSvg = serializeSvg(svg);
       els.svgSource.value = latestSvg;
-      els.preview.replaceChildren(svg.cloneNode(true));
+      els.previewContent.replaceChildren(svg.cloneNode(true));
       els.svgSize.textContent = `${svg.getAttribute("width") || "auto"} × ${svg.getAttribute("height") || "auto"}`;
       setStatus("已渲染。", "ok");
       return latestSvg;
     } catch (error) {
       latestSvg = "";
-      els.preview.textContent = "渲染失败";
+      els.previewContent.textContent = "渲染失败";
       els.svgSource.value = "";
       els.svgSize.textContent = "-";
       setStatus(error.message || "渲染失败。", "error");

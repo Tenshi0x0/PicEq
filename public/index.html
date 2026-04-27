@@ -86,7 +86,6 @@
 
         <div class="button-row">
           <button id="renderButton" type="button">渲染</button>
-          <button id="copySvgButton" type="button">复制 SVG</button>
           <button id="downloadSvgButton" type="button">下载 SVG</button>
         </div>
       </section>
@@ -96,7 +95,15 @@
           <h2>SVG 预览</h2>
           <span id="svgSize">-</span>
         </div>
-        <div id="preview" class="preview" aria-live="polite"></div>
+        <div id="preview" class="preview">
+          <button id="copySvgButton" class="icon-button copy-preview-button" type="button" title="复制 SVG" aria-label="复制 SVG">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="8" y="8" width="11" height="11" rx="2"></rect>
+              <path d="M5 15V6a1 1 0 0 1 1-1h9"></path>
+            </svg>
+          </button>
+          <div id="previewContent" class="preview-content" aria-live="polite"></div>
+        </div>
         <label class="field source-field">
           <span>SVG 源码</span>
           <textarea id="svgSource" readonly spellcheck="false"></textarea>
